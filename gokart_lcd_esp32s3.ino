@@ -54,6 +54,10 @@ int currentGear = 2; // values from 0-2 according to gearInfo typedef
 
 
 void setup() {
+
+  digitalWrite(LEFT_REVERSE_IN5_BROWN, HIGH);
+  digitalWrite(RIGHT_REVERSE_IN6_BROWN, LOW);
+  
   // Initialize I2C
   Wire.begin(SDA_PIN, SCL_PIN);
 
@@ -136,12 +140,12 @@ void checkPedalInputs() {
   // Reading for pedal presses for gear change + changing reversal of direction
   if(!reverse) {
     if (digitalRead(RIGHT_PEDAL_PIN) == 0){
-      if (currentGear < 3){
+      if (currentGear < 2){
         gearChange = true;
         currentGear++;
       }
     } else if (digitalRead(LEFT_PEDAL_PIN) == 0) {
-      if (currentGear > 1){
+      if (currentGear > 0){
         gearChange = true;
         currentGear--;
       } else if(currentGear == 0) {
@@ -152,7 +156,7 @@ void checkPedalInputs() {
     } 
   } else if (reverse) {
     if (digitalRead(RIGHT_PEDAL_PIN) == 0){
-      if (currentGear > 1){
+      if (currentGear > 0){
         gearChange = true;
         currentGear--;
       } else if(currentGear == 0) {
@@ -160,7 +164,7 @@ void checkPedalInputs() {
         reverse = false;
       }
     } else if (digitalRead(LEFT_PEDAL_PIN) == 0) {
-      if (currentGear < 3){
+      if (currentGear < 2){
         gearChange = true;
         currentGear++;
       }
@@ -187,6 +191,18 @@ void changeGear() {
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, HIGH);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, HIGH);
+    }
+  }
+}
+
+void changeReverse() {
+  if(reverseUpdate){
+    if(reverse) { 
+      digitalWrite(LEFT_REVERSE_IN5_BROWN, LOW);
+      digitalWrite(RIGHT_REVERSE_IN6_BROWN, HIGH);
+    } else if(!reverse)  {
+      digitalWrite(LEFT_REVERSE_IN5_BROWN, HIGH);
+      digitalWrite(RIGHT_REVERSE_IN6_BROWN, LOW);
     }
   }
 }
