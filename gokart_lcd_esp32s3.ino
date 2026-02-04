@@ -38,9 +38,9 @@ bool gearChange = true; //signifies update in gear change
 bool reverse = false; //signifies gokart is in reverse
 
 // Variables
-int currentScreen = 2; // value from 1-3
+int currentScreen = 1; // value from 0-1
 int currentSpeed = 0; // This will be replaced with actual speed from ESC later
-int currentGear = 0; // values from 0-2 according to gearInfo typedef
+int currentGear = 2; // values from 0-2 according to gearInfo typedef
 
 //typedef for gear
 
@@ -104,6 +104,7 @@ void displayGear() {
     display.setCursor(95,5);
     display.fillRect(95,5,5,7,SSD1306_BLACK);
     display.print(currentGear);
+    gearChange = false;
   } 
 }
 
@@ -156,6 +157,28 @@ void checkPedalInputs() {
         gearChange = true;
         currentGear++;
       }
+
+void loop() {
+
+  // Reading for pedal presses for gear change.
+  // NOTE: must be changed to account for reverse direction
+  if (digitalRead(RIGHT_PEDAL_PIN) == LOW){
+    if (currentGear < 3 && !reverse){
+      gearChange = true;
+      currentGear++;
+    }
+    if (currentGear < 3 && !reverse){
+      gearChange = true;
+      currentGear++;
+    }
+  } else if (digitalRead(LEFT_PEDAL_PIN) == LOW) {
+    if (currentGear > 1){
+      gearChange = true;
+      currentGear--;
+    }
+  } else if (digitalRead(RIGHT_BUTTON_PIN == LOW)) {
+    if(currentScreen < 3) {
+      currentScreen += 1;
     }
   }
 }
@@ -188,7 +211,7 @@ void updateScreen() {
       currentScreen -= 1;
     }
   } else if (digitalRead(RIGHT_BUTTON_PIN == LOW)) {
-    if(currentScreen < 3) {
+    if(currentScreen < 1) {
       currentScreen += 1;
     }
   } 
@@ -202,16 +225,13 @@ void loop() {
   //Reading button presses for screen changes
   updateScreen();
 
-  if(currentScreen == 1) {
+  if(currentScreen == 0) {
     //display something
-  } else if(currentScreen == 2) {
+  } else if(currentScreen == 1) {
     //displays gear
     wipeScreen();
     updateGear();
     displayGear();
-  } else if(currentScreen == 3) {
-    //display something
   }
-  
-  delay(200);
+  delay(100);
 }
