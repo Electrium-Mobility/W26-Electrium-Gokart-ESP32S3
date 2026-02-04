@@ -23,6 +23,9 @@
 #define RIGHT_BUTTON_PIN 9
 #define LEFT_BUTTON_PIN 10
 
+#define RX_PIN 44
+#define TX_PIN 43
+
 // 6 Channel relay pin definitions, connects to each 3 speed
 #define LEFT_THREE_SPEED_IN1_BLUE 16
 #define LEFT_THREE_SPEED_IN2_YELLOW 25
@@ -61,7 +64,8 @@ void setup() {
   // Initialize I2C
   Wire.begin(SDA_PIN, SCL_PIN);
 
-  // Initialize serial & bms
+  // Initialize serial & bms serial and bms
+  BMS_SERIAL.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(9600);
   bms.Init();
 
@@ -226,6 +230,7 @@ void loop() {
   checkPedalInputs();
   // If gear is changed, communicate with 2 channel relay.
   changeGear();
+  changeReverse();
   // Reading button presses for screen changes
   updateScreen();
   // Update BMS
