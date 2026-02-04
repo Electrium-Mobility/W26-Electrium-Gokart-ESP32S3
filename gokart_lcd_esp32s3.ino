@@ -135,7 +135,6 @@ void wipeScreen() {
 void checkPedalInputs() {
   // Reading for pedal presses for gear change + changing reversal of direction
   if(!reverse) {
-<<<<<<< HEAD
     if (digitalRead(RIGHT_PEDAL_PIN) == 0){
       if (currentGear < 3){
         gearChange = true;
@@ -143,8 +142,6 @@ void checkPedalInputs() {
       }
     } else if (digitalRead(LEFT_PEDAL_PIN) == 0) {
       if (currentGear > 1){
-=======
->>>>>>> 2a6a1282f07c434f8fec2b6a7906c3599feeddb9
         gearChange = true;
         currentGear--;
       } else if(currentGear == 0) {
@@ -154,11 +151,8 @@ void checkPedalInputs() {
       }
     } 
   } else if (reverse) {
-<<<<<<< HEAD
     if (digitalRead(RIGHT_PEDAL_PIN) == 0){
       if (currentGear > 1){
-=======
->>>>>>> 2a6a1282f07c434f8fec2b6a7906c3599feeddb9
         gearChange = true;
         currentGear--;
       } else if(currentGear == 0) {
@@ -183,18 +177,12 @@ void changeGear() {
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, LOW);
-<<<<<<< HEAD
     } else if(currentGear == 1)  {
-=======
->>>>>>> 2a6a1282f07c434f8fec2b6a7906c3599feeddb9
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, HIGH);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, HIGH);
       digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, LOW);
-<<<<<<< HEAD
     } else if(currentGear == 0) {
-=======
->>>>>>> 2a6a1282f07c434f8fec2b6a7906c3599feeddb9
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, LOW);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, HIGH);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
