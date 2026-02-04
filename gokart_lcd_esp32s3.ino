@@ -79,24 +79,24 @@ void setup() {
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
 }
 
-// Basic function that updates gear value 
-void updateGear() {
- // Later will fetch gear from ESP input from pedals
-  currentGear += 1;
-  if(currentGear > 3) {
-    currentGear = 1;
-  }
+// NOT NEEDED // Basic function that updates gear value 
+// void updateGear() {
+//  // Later will fetch gear from ESP input from pedals
+//   currentGear += 1;
+//   if(currentGear > 3) {
+//     currentGear = 1;
+//   }
 
-}
+// }
 
-// Basic function that updates speed value
-void updateSpeed() {
-  // Later this function will fetch the speed from the ESC
-  currentSpeed += 5; // debugging, changing speed
-  if(currentSpeed > 100) {
-    currentSpeed = 25;
-  }
-}
+// // Basic function that updates speed value
+// void updateSpeed() {
+//   // Later this function will fetch the speed from the ESC
+//   currentSpeed += 5; // debugging, changing speed
+//   if(currentSpeed > 100) {
+//     currentSpeed = 25;
+//   }
+// }
 
 // Basic function that updates gear value on LCD screen
 void displayGear() {
@@ -107,7 +107,7 @@ void displayGear() {
     display.print("Gear: ");
     display.setCursor(95,5);
     display.fillRect(95,5,5,7,SSD1306_BLACK);
-    display.print(currentGear);
+    display.print(currentGear + 1);
     gearChange = false;
   } 
 }
@@ -134,27 +134,28 @@ void checkPedalInputs() {
   // Reading for pedal presses for gear change + changing reversal of direction
   if(!reverse) {
     if (digitalRead(RIGHT_PEDAL_PIN) == LOW){
-      if (currentGear < 3){
+      if (currentGear < 2){
         gearChange = true;
         currentGear++;
       }
     } else if (digitalRead(LEFT_PEDAL_PIN) == LOW) {
-      if (currentGear > 1){
+      if (currentGear > 0){
         gearChange = true;
         currentGear--;
-      } else if(currentGear == 1) {
+      } else if(currentGear == 0) {
         reverseUpdate = true;
         reverse = true;
+        delay(300);
       }
     } 
   } else if (reverse) {
     if (digitalRead(RIGHT_PEDAL_PIN) == LOW){
-      if (currentGear > 1){
+      if (currentGear > 0){
         gearChange = true;
         currentGear--;
-      } else if(currentGear == 1) {
+      } else if(currentGear == 0) {
         reverseUpdate = true;
-        reverse = true;
+        reverse = false;
       }
     } else if (digitalRead(LEFT_PEDAL_PIN) == LOW) {
       if (currentGear < 3){
@@ -172,18 +173,18 @@ void changeGear() {
     if(gear == HIGH) { 
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, LOW);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, LOW);
-      digitalWrite(RIGHT_THREE_SPEED_IN1_BLUE, LOW);
-      digitalWrite(RIGHT_THREE_SPEED_IN2_YELLOW, LOW);
+      digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
+      digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, LOW);
     } else if(gear == MEDIUM)  {
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, HIGH);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, LOW);
-      digitalWrite(RIGHT_THREE_SPEED_IN1_BLUE, HIGH);
-      digitalWrite(RIGHT_THREE_SPEED_IN2_YELLOW, LOW);
+      digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, HIGH);
+      digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, LOW);
     } else if(gear == LOW) {
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, LOW);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, HIGH);
-      digitalWrite(RIGHT_THREE_SPEED_IN1_BLUE, LOW);
-      digitalWrite(RIGHT_THREE_SPEED_IN2_YELLOW, HIGH);
+      digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
+      digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, HIGH);
     }
 }
 
@@ -213,8 +214,10 @@ void loop() {
   } else if(currentScreen == 1) {
     //displays gear
     wipeScreen();
-    updateGear();
+    //updateGear();
     displayGear();
   }
-  delay(100);
+  reverseUpdate = false;
+  gearChange = false;
+  delay(300);
 }
