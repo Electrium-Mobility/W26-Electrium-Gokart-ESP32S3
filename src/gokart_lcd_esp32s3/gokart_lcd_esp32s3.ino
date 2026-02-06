@@ -1,19 +1,24 @@
-#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_ILI9341.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <daly-bms-uart.h>
 #include <string.h>
 
-// Display resolution
-#define SCREEN_WIDTH 128 // adjust if your display is 128x64, 128x32, or 240x240
-#define SCREEN_HEIGHT 64
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 320
 
-// Reset pin (not used for I2C)
-#define OLED_RESET -1
+// SPI pins (ESP32-S3)
+#define TFT_MOSI 11   // SDI (MOSI)
+#define TFT_MISO 13   // SDO (optional, can be unused)
+#define TFT_SCK  12   // SCK
 
-// I2C pins for ESP32-S3
-#define SDA_PIN 21
-#define SCL_PIN 47
+// Control pins
+#define TFT_CS   5
+#define TFT_DC   6
+#define TFT_RST  4    // or -1 if tied to ESP reset
+
+// Backlight
+#define TFT_LED  15   // optional PWM later
 
 // Pedal pin definitions connecting to ESP32S3
 #define RIGHT_PEDAL_PIN 7
@@ -40,7 +45,7 @@
 #define BMS_SERIAL Serial1
 
 // Create display object
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_ILI9341 display(TFT_CS, TFT_DC, TFT_RST);
 
 // Create Daly BMS object
 Daly_BMS_UART bms(BMS_SERIAL);
@@ -67,27 +72,22 @@ void setup() {
   pinMode(RIGHT_THREE_SPEED_IN4_YELLOW, OUTPUT);
   pinMode(LEFT_REVERSE_IN5_BROWN, OUTPUT);
   pinMode(RIGHT_REVERSE_IN6_BROWN, OUTPUT);
-  
-  // Initialize I2C
-  Wire.begin(SDA_PIN, SCL_PIN);
 
   // Initialize serial & bms serial and bms
   BMS_SERIAL.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(9600);
   bms.Init();
 
-  // Initialize display
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // 0x3C is the common I2C address
-    Serial.println(F("SSD1306 allocation failed"));
-    while(true);
-  }
+  SPI.begin(TFT_SCK, TFT_MISO, TFT_MOSI);
+  display.begin();
+  display.setRotation(1); // 0–3 (landscape = 1 or 3)
+  display.fillScreen(ILI9341_BLACK);
 
   //basic setup
   display.clearDisplay();
   display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
+  display.setTextColor(ILI9341_WHITE);
   display.setTextWrap(false);
-  display.display();
 
   //pinmode setup
   pinMode(LEFT_PEDAL_PIN, INPUT_PULLUP);
@@ -99,22 +99,22 @@ void setup() {
 
 // Basic function that updates gear value on LCD screen
 void displayGear() {
-  if (gearChange){
-    display.setCursor(65,5);
-    display.setTextWrap(false);
+  if (gearChange) {
+    display.fillRect(0, 0, 240, 40, ILI9341_BLACK);
+
+    display.setCursor(20, 10);
+    display.setTextSize(2);
+    display.setTextColor(ILI9341_WHITE);
     display.print("Gear: ");
-    display.setCursor(95,5);
-    display.fillRect(95,5,5,7,SSD1306_BLACK);
     display.print(currentGear + 1);
-    display.display();
+
     gearChange = false;
-  } 
+  }
 }
 
 // Basic function that updates speed value on LCD screen
 void displaySpeed() {
-  display.display();
-  display.fillRect(50,32,70,7,SSD1306_BLACK);
+  display.fillRect(50,32,70,7,ILI9341_BLACK);
   display.setCursor(50,32);
   display.print(currentSpeed);
   display.setTextSize(0.25);
@@ -124,8 +124,7 @@ void displaySpeed() {
 
 // Basic function that clears LCD screen of all that is currently being displayed
 void wipeScreen() {
-  display.display();
-  display.fillRect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,SSD1306_BLACK);
+  display.fillScreen(ILI9341_BLACK);
 }
 
 // Function that checks for pedal inputs and updates gear + reversal accordingly
