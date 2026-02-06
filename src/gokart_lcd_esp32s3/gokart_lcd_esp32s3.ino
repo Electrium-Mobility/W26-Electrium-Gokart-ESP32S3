@@ -89,24 +89,6 @@ void setup() {
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
 }
 
-// NOT NEEDED // Basic function that updates gear value 
-// void updateGear() {
-//  // Later will fetch gear from ESP input from pedals
-//   currentGear += 1;
-//   if(currentGear > 3) {
-//     currentGear = 1;
-//   }
-
-// }
-
-// // Basic function that updates speed value
-// void updateSpeed() {
-//   // Later this function will fetch the speed from the ESC
-//   currentSpeed += 5; // debugging, changing speed
-//   if(currentSpeed > 100) {
-//     currentSpeed = 25;
-//   }
-// }
 
 // Basic function that updates gear value on LCD screen
 void displayGear() {
@@ -224,7 +206,6 @@ void updateScreen() {
   } 
 }
 
-/*
 void loop() {
   // Check Pedal Inputs
   checkPedalInputs();
@@ -236,6 +217,7 @@ void loop() {
   // Update BMS
   if(currentScreen == 0) {
     //display something
+    wipeScreen();
   } else if(currentScreen == 1) {
     //displays gear
     wipeScreen();
@@ -245,29 +227,4 @@ void loop() {
   reverseUpdate = false;
   gearChange = false;
   delay(300);
-}
-*/
-
-//temporary loop for testing BMS values
-void loop() {
-  
-  Serial.println("Press any key and hit enter to query data from the BMS...");
-  while(Serial.available() == 0)
-  {
-  }
-  Serial.read(); // discard character
-  Serial.read(); //discard new line
-  bms.update();
-
-  Serial.println("Basic BMS Data:              " + (String)bms.get.packVoltage + "V " + (String)bms.get.packCurrent + "I " + (String)bms.get.packSOC + "\% ");
-  Serial.println("Package Temperature (C):     " + (String)bms.get.tempAverage);
-  Serial.println("Highest Cell Voltage:        #" + (String)bms.get.maxCellVNum + " with voltage " + (String)(bms.get.maxCellmV / 1000));
-  Serial.println("Lowest Cell Voltage:         #" + (String)bms.get.minCellVNum + " with voltage " + (String)(bms.get.minCellmV / 1000));
-  Serial.println("Number of Cells:             " + (String)bms.get.numberOfCells);
-  Serial.println("Number of Temp Sensors:      " + (String)bms.get.numOfTempSensors);
-  Serial.println("BMS Chrg / Dischrg Cycles:   " + (String)bms.get.bmsCycles);
-  Serial.println("BMS Heartbeat:               " + (String)bms.get.bmsHeartBeat); // cycle 0-255
-  Serial.println("Discharge MOSFet Status:     " + (String)bms.get.disChargeFetState);
-  Serial.println("Charge MOSFet Status:        " + (String)bms.get.chargeFetState);
-  Serial.println("Remaining Capacity mAh:      " + (String)bms.get.resCapacitymAh);
 }
