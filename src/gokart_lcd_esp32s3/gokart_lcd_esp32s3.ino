@@ -84,7 +84,6 @@ void setup() {
   display.fillScreen(ILI9341_BLACK);
 
   //basic setup
-  display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(ILI9341_WHITE);
   display.setTextWrap(false);
@@ -94,6 +93,8 @@ void setup() {
   pinMode(RIGHT_PEDAL_PIN, INPUT_PULLUP);
   pinMode(LEFT_BUTTON_PIN, INPUT_PULLUP);
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
+
+  digitalWrite(TFT_LED, HIGH);
 }
 
 
@@ -173,16 +174,19 @@ void changeGear() {
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, LOW);
+      delay(100);
     } else if(currentGear == 1)  {
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, HIGH);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, HIGH);
       digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, LOW);
+      delay(100);
     } else if(currentGear == 0) {
       digitalWrite(LEFT_THREE_SPEED_IN1_BLUE, LOW);
       digitalWrite(LEFT_THREE_SPEED_IN2_YELLOW, HIGH);
       digitalWrite(RIGHT_THREE_SPEED_IN3_BLUE, LOW);
       digitalWrite(RIGHT_THREE_SPEED_IN4_YELLOW, HIGH);
+      delay(100);
     }
   }
 }
@@ -216,11 +220,7 @@ void loop() {
   // Check Pedal Inputs
   checkPedalInputs();
   // If gear is changed, communicate with 2 channel relay.
-  if (gearChange) {
   changeGear();
-  gearChange = false;
-  delay(300);
-}
   changeReverse();
   // Reading button presses for screen changes
   updateScreen();
