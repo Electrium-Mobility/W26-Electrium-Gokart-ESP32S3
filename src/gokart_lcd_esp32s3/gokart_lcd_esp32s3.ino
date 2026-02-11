@@ -2,15 +2,9 @@
 #include <Adafruit_SSD1306.h>
 #include <string.h>
 #include <stdlib.h>
+#include <driver/twai.h>
 #include "screenFunctions.h"
 #include "hardware.h"
-
-//#include <daly-bms-uart.h> 
-
-/* #define BMS_SERIAL Serial1 */
-
-/* Create Daly BMS object */
-// Daly_BMS_UART bms(BMS_SERIAL);
 
 /* Booleans */
 bool reverseUpdate = false; //signifies update in reversal of gokart
@@ -41,10 +35,6 @@ void setup() {
   pinMode(RIGHT_PEDAL_PIN, INPUT_PULLUP);
   pinMode(LEFT_BUTTON_PIN, INPUT_PULLUP);
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
-
-  /* Initialize serial & bms serial and bms */
-  //BMS_SERIAL.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
-  //bms.Init();
 
   /* Initialize Display */
   initDisplay();
@@ -139,6 +129,40 @@ void updateScreen() {
       currentScreen += 1;
     }
   } 
+}
+
+/* Receive CAN Message */
+void receiveCANMessage()
+{
+  twai_message_t message;
+  esp_err_t err = twai_receive(&message, pdMS_TO_TICKS(1000));
+  if (err == ESP_OK) {
+      Serial.println("Message received");
+      // process message...
+  } else {
+      Serial.print("Failed to receive message: ");
+      Serial.println(esp_err_to_name(err));
+      return;
+  }
+
+  // Process received message
+  if (message.extd)
+  {
+    printf("Message is in Extended Format\n");
+  }
+  else
+  {
+    printf("Message is in Standard Format\n");
+  }
+  printf("ID is %d\n", message.identifier);
+  if (!(message.rtr))
+  {
+    for (int i = 0; i < message.data_length_code; i++)
+    {
+      printf("Data byte %d = %d\n", i, message.data[i]);
+      speed = message.data[i];
+    }
+  }
 }
 
 void loop() {

@@ -21,4 +21,11 @@
 #define RX_PIN 44
 #define TX_PIN 43
 
+/* CAN */
+#define CAN_TX_GPIO GPIO_NUM_21
+#define CAN_RX_GPIO GPIO_NUM_20
+
+#define HALL_SENSOR GPIO_NUM_3 //Digital output of hall sensor
+
+
 #endif
